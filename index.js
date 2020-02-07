@@ -2,29 +2,25 @@ const express = require('express');
 const app = express();
 const helmet = require('helmet');
 const morgan = require('morgan');
-const config = require('config');
 const debug = require('debug')('app:startup');
-const auth = require('./routes/auth');
-const logger = require('./middleware/logger')
+const registerRoutes = require('./startup/routes');
+const logger = require('./middleware/logger');
+const dbconnect = require('./startup/db');
 
-console.log(config.get('name'));
-console.log(config.get('mail.server'));
-console.log(config.get('mail.password'));
+dbconnect();
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 app.use(helmet());
 app.use(logger);
-app.use('/api/auth', auth);
 
 if (app.get('env') === 'development') {
     debug("morgan enabled...");
     app.use(morgan('tiny'));
 }
 
-
-
+registerRoutes(app);
 
 const port = process.env.PORT || 3000
-app.listen(3000, () => console.log(`listening on port ${port}...`));
+app.listen(3000, () => debug(`listening on port ${port}...`));

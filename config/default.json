@@ -1,3 +1,4 @@
 {
-    "name": "auth-microservice"
+    "name": "auth-microservice",
+    "db": "mongodb://localhost/fotidyllen"
 }
