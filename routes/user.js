@@ -1,22 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const brcypt = require('bcrypt');
-const { validate } = require('../models/user');
+const bcrypt = require('bcrypt');
+const { User, validate } = require('../models/user');
+const _ = require('lodash');
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const { error } = validate(req.body);
     if (error) { return res.status(400).send(error.details[0].message) }
 
     const saltRounds = 10;
-    brcypt.hash(req.body.password, saltRounds, (err, encrypted) => {
-        if (err) return res.status(500).send('User could not be saved');
-        console.log(encrypted);
-    })
+    const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
 
-    res.send({
+    const user = new User({
         username: req.body.username,
-        password: req.body.password
+        password: hashedPassword
     });
+
+    user.save()
+        .catch(err => {
+            return res.status(500).send("Could not save user to the database...");
+        })
+
+    res.send(_.pick(req.body, ['username']));
 })
 
 module.exports = router;

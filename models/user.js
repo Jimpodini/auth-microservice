@@ -1,4 +1,12 @@
 const Joi = require('@hapi/joi');
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+    username: String,
+    password: String
+});
+
+const User = mongoose.model('User', userSchema);
 
 function validateUser(user){
     const schema = Joi.object({
@@ -9,4 +17,5 @@ function validateUser(user){
     return schema.validate(user);
 }
 
+module.exports.User = User;
 module.exports.validate = validateUser;

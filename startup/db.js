@@ -8,7 +8,7 @@ module.exports = function dbconnect(){
         debug("connected to MongoDB...")
     })
     .catch(err => {
-        debug('could not connect to MongdoDb, exiting...');
-        process.exit(-1);
+        console.log('could not connect to MongdoDb, exiting...');
+        process.exit(1);
     })
 }
